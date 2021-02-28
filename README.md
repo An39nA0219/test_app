@@ -1,24 +1,10 @@
-# README
+UserがPostを作って共有するだけのアプリ。
+イメージはTwitter。
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+users#createはログイン外で行う。
 
-Things you may want to cover:
+user_sessions#createでログイン。
 
-* Ruby version
+users#index,show,posts#index,show,createはログイン内で行う。
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+users#update,destroy,posts#update,destroyはログインユーザーのみ可能。

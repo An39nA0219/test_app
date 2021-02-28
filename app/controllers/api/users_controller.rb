@@ -1,11 +1,11 @@
 module Api
   class UsersController < ApplicationController
-
+    before_action :require_login
     before_action :set_user, only: [:show, :update, :destroy]
 
     def index
       users = User.all
-      render json: {status: 'SUCCESS', action: action_name, data: users}
+      render json: {status: 'SUCCESS', action: action_name, data: users, user: session}
     end
 
     def show

@@ -5,9 +5,9 @@ module Api
       email = params[:email].downcase
       password = params[:password]
       if login(email, password)
-        render json: { status: 'SUCCESS', data: session, message: 'ログインしました' }
+        render json: { status: 'SUCCESS', data: session[:user_id], message: 'ログインしました' }
       else
-        render json: { status: 'ERROR', message: 'ログインできません' }
+        render_unauthorized
       end
     end
 

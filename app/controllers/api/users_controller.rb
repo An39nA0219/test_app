@@ -1,7 +1,10 @@
 module Api
   class UsersController < ApplicationController
-    before_action :require_login
-    before_action :set_user, only: [:show, :update, :destroy]
+    wrap_parameters :user, include: [:name, :email, :password, :password_confirmation]
+
+    before_action :require_login, only: [:index, :show, :update, :destroy]
+    before_action :require_logout, only: [:create]
+    before_action :access_denied_for_other_users, only: [:update, :destroy]
 
     def index
       users = User.all
@@ -9,7 +12,8 @@ module Api
     end
 
     def show
-      render json: {status: 'SUCCESS', action: action_name, data: @user}
+      user = User.find(params[:id])
+      render json: {status: 'SUCCESS', action: action_name, data: user, user: session}
     end
 
     def create
@@ -22,16 +26,18 @@ module Api
     end
 
     def update
-      if @user.update(user_params)
-        render json: {status: 'SUCCESS', action: action_name, data: @user}
+      user = User.find(params[:id])
+      if user.update(user_params)
+        render json: {status: 'SUCCESS', action: action_name, data: user}
       else
-        render json: {status: 'ERROR', action: action_name, data: @user.errors}
+        render json: {status: 'ERROR', action: action_name, data: user.errors}
       end
     end
 
     def destroy
-      @user.destroy
-      render json: {status: 'SUCCESS', action: action_name, data: @user}
+      user = User.find(params[:id])
+      user.destroy
+      render json: {status: 'SUCCESS', action: action_name, data: user}
     end
 
     private
@@ -39,9 +45,11 @@ module Api
     def user_params
       params.require(:user).permit(:name, :email, :password, :password_confirmation)
     end
-
-    def set_user     
-      @user = User.find(params[:id])
+    
+    def access_denied_for_other_users
+      unless User.find(params[:id]) == current_user
+        render_unauthorized
+      end
     end
     
   end

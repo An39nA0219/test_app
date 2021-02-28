@@ -4,12 +4,21 @@ class ApplicationController < ActionController::API
 
   private
 
+  def current_user
+    @current_user ||= User.find_by(id: session[:user_id])
+  end
+
   def require_login
-    @current_user = User.find_by(id: session[:user_id])
+    current_user
     return if @current_user
     render_unauthorized
   end
 
+  def require_logout
+    current_user
+    return unless @current_user
+    render_unauthorized
+  end
 
 
   # 400 Bad Request
